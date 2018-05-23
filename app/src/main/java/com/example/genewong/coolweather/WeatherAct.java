@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,8 @@ public class WeatherAct extends AppCompatActivity {
 
     private ImageView bingPicImg;
 
+    private SwipeRefreshLayout swipeRefresh;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,15 +61,24 @@ public class WeatherAct extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        final String weatherId;
         String weatherString = sharedPreferences.getString("weather", null);
         if (weatherString != null) {
             Weather weather = Utility.getWeatherResponse(weatherString);
+            weatherId = weather.basic.weatherId;
             showWeatherInfo(weather);
         } else {
-            String weatherId = getIntent().getStringExtra("weather_id");
+            weatherId = getIntent().getStringExtra("weather_id");
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
+
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                requestWeather(weatherId);
+            }
+        });
 
         String bingPic = sharedPreferences.getString("bing_pic", null);
         if (bingPic != null) {
@@ -136,6 +148,7 @@ public class WeatherAct extends AppCompatActivity {
                     @Override
                     public void run() {
                         Toast.makeText(WeatherAct.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -156,6 +169,7 @@ public class WeatherAct extends AppCompatActivity {
                         } else {
                             Toast.makeText(WeatherAct.this, "获取天气信息失败", Toast.LENGTH_SHORT).show();
                         }
+                        swipeRefresh.setRefreshing(false);
                     }
                 });
             }
@@ -204,6 +218,10 @@ public class WeatherAct extends AppCompatActivity {
         sportText = (TextView)findViewById(R.id.sport_text);
 
         bingPicImg = (ImageView)findViewById(R.id.bing_pic_img);
+
+        swipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
+        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        
     }
 
 }
