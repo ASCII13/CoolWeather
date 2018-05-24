@@ -7,13 +7,17 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +33,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class WeatherAct extends AppCompatActivity {
+public class WeatherAct extends AppCompatActivity implements View.OnClickListener {
     private ScrollView weatherLayout;
     private TextView titleCity;
     private TextView titleUpdateTime;
@@ -45,7 +49,10 @@ public class WeatherAct extends AppCompatActivity {
 
     private ImageView bingPicImg;
 
-    private SwipeRefreshLayout swipeRefresh;
+    public SwipeRefreshLayout swipeRefresh;
+    public DrawerLayout drawerLayout;
+
+    private Button navBtn;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -133,7 +140,7 @@ public class WeatherAct extends AppCompatActivity {
         weatherLayout.setVisibility(View.VISIBLE);
     }
 
-    private void requestWeather(String weatherId) {
+    public void requestWeather(String weatherId) {
         loadBingPic();
 
         String weatherUrl = "http://guolin.tech/api/weather?cityid="
@@ -221,7 +228,22 @@ public class WeatherAct extends AppCompatActivity {
 
         swipeRefresh = (SwipeRefreshLayout)findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
-        
+
+        drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
+
+        navBtn = (Button)findViewById(R.id.nav_btn);
+        navBtn.setOnClickListener(this);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.nav_btn:
+                drawerLayout.openDrawer(GravityCompat.START);
+                break;
+
+            default:
+                break;
+        }
+    }
 }
