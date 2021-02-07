@@ -1,2 +1,4 @@
 # CoolWeather
-## 入门android的练手项目
+
+## Introduction
+第一行代码（第二版）学习项目
